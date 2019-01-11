@@ -276,8 +276,9 @@ export default create({
       let value;
 
       if (this.type === 'time') {
-        const indexes = picker.getIndexes();
-        value = `${indexes[0] + this.minHour}:${indexes[1] + this.minMinute}`;
+        // 直接使用返回来的值
+        const values = picker.getValues();
+        value = `${values[0]}:${values[1]}`;
       } else {
         const values = picker.getValues();
         const year = getTrueValue(values[0]);

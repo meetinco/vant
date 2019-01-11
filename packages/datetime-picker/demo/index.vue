@@ -79,10 +79,9 @@ export default {
       }
       if (type === 'month') {
         return value + this.$t('month');
-      } else if (type === 'minute') {
-        if (value % 5 !== 0) {
-          return undefined;
-        }
+      }
+      if (type === 'minute' && value % 5 !== 0) {
+        return undefined;
       }
       return value;
     }
