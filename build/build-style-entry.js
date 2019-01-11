@@ -21,7 +21,7 @@ const dir = path.join(__dirname, '../es');
 
 function destEntryFile(component, filename, ext = '') {
   const deps = analyzeDependencies(component).map(dep => (
-    getStyleRelativePath(component, dep, ext)
+    getStyleRelativePath(component, dep, ext).replace(/\\/g, '/')
   ));
 
   const esEntry = path.join(dir, component, `style/${filename}`);
@@ -45,7 +45,7 @@ function analyzeDependencies(component) {
   search(
     dependencyTree({
       directory: dir,
-      filename: path.join(dir, component, 'index.js'),
+      filename: path.join(dir, component, 'index.js').replace(/\\/g, '/'),
       filter: path => !~path.indexOf('node_modules')
     }),
     component,
@@ -83,14 +83,14 @@ function search(tree, component, checkList) {
 
 function getStylePath(component, ext = '.css') {
   if (component === 'base') {
-    return path.join(__dirname, `../es/style/base${ext}`);
+    return path.join(__dirname, `../es/style/base${ext}`).replace(/\\/g, '/');
   }
-  return path.join(__dirname, `../es/${component}/index${ext}`);
+  return path.join(__dirname, `../es/${component}/index${ext}`).replace(/\\/g, '/');
 }
 
 function getStyleRelativePath(component, style, ext) {
   return path.relative(
-    path.join(__dirname, `../es/${component}/style`),
+    path.join(__dirname, `../es/${component}/style`).replace(/\\/g, '/'),
     getStylePath(style, ext)
   );
 }
