@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import use from './use';
 
 const isServer = Vue.prototype.$isServer;
 
@@ -34,9 +35,10 @@ function isAndroid() {
 
 function range(num, min, max) {
   return Math.min(Math.max(num, min), max);
-};
+}
 
 export {
+  use,
   get,
   range,
   isObj,

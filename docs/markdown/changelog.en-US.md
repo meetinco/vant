@@ -1,5 +1,94 @@
 ## Changelog
 
+## [v1.5.1](https://github.com/youzan/vant/tree/v1.5.1)
+`2019-01-01`
+
+**Improvements**
+
+- Card: add price、num slot [\#2416](https://github.com/youzan/vant/pull/2416)
+- Slider: add button slot [\#2373](https://github.com/youzan/vant/pull/2373)
+- Slider: add active-color、inactive-color prop [\#2374](https://github.com/youzan/vant/pull/2374)
+- Tabbar: add active-color prop [\#2372](https://github.com/youzan/vant/pull/2372)
+- Sku: add sku-selected event [\#2386](https://github.com/youzan/vant/pull/2386)
+
+**Bug Fixes**
+
+- fix Card desc ellipsis [\#2414](https://github.com/youzan/vant/pull/2414)
+- fix ContactList missing dependencies [\#2415](https://github.com/youzan/vant/pull/2415)
+- fix Icon missing protocol [\#2385](https://github.com/youzan/vant/pull/2385)
+
+
+## [v1.5.0](https://github.com/youzan/vant/tree/v1.5.0)
+`2018-12-22`
+
+**Breaking changes**
+
+In version 1.5.0, we unified the icon specification and redrawed all the icons, adding about 100 new icons. For the same icon, we will provide two styles of `outlined` and `filled`. 
+
+<img width="375" height="124" src="//img.yzcdn.cn/vant/icon-style-1222.png">
+
+At the same time, we also made some adjustments to the original icons：
+
+- remove edit-data
+- remove pending-deliver
+- remove pending-evaluate
+- remove points-mall
+- remove exchange-record
+- rename warn to info
+- rename check to circle
+- rename add2 to add-square
+- rename question2 to question
+- rename password-view to eye
+- rename password-not-view to closed-eye
+- rename value-card to balance-o
+- rename receive-gift to gift
+- rename pending-orders to orders-o
+- rename gift-card-pay to gift-card
+
+Also we have optimized the UI of the following components:：
+
+- Cell
+- Card 
+- Checkbox
+- Collapse
+- Tab
+- Toast
+- Switch
+- Swipe
+- TreeSelect
+
+**Improvements**
+
+- support tag/attribute auto-completion via the vetur plugin [\#2261](https://github.com/youzan/vant/pull/2261)
+- support use component by PascalCase tag name [\#2296](https://github.com/youzan/vant/pull/2296)
+- Tab: add ellipsis prop [\#2299](https://github.com/youzan/vant/pull/2299)
+- Tab: add line-height prop [\#2357](https://github.com/youzan/vant/pull/2357)
+- Tag: add text-color prop [\#2277](https://github.com/youzan/vant/pull/2277)
+- Card: add lazy-load prop [\#2301](https://github.com/youzan/vant/pull/2301)
+- Coupon: add currency prop [\#2274](https://github.com/youzan/vant/pull/2274) [\#2256](https://github.com/youzan/vant/pull/2256)
+- Dialog: add message-align prop [\#2259](https://github.com/youzan/vant/pull/2259)
+- Stepper: add async-change prop [\#2318](https://github.com/youzan/vant/pull/2318)
+- SwitchCell: add active-color、inactive-color prop [\#2273](https://github.com/youzan/vant/pull/2273)
+- NoticeBar: support use built-in icon [\#2305](https://github.com/youzan/vant/pull/2305)
+- TreeSelect: support disable nav item [\#2308](https://github.com/youzan/vant/pull/2308)
+
+**Bug Fixes**
+
+- fix Dialog blurry text after scale animation [\#2300](https://github.com/youzan/vant/pull/2300)
+- fix Checkbox default label height [\#2293](https://github.com/youzan/vant/pull/2293)
+- fix Field cut off charactor input when use maxlength [\#2295](https://github.com/youzan/vant/pull/2295)
+- fix Swipe not re-initialize when inside keep-alive component [\#2297](https://github.com/youzan/vant/pull/2297)
+- fix Swipe cause error in some cases [\#2253](https://github.com/youzan/vant/pull/2253)
+- fix Swipe transitionend event bubble [\#2355](https://github.com/youzan/vant/pull/2355)
+- fix Tab display error when use animated prop [\#2238](https://github.com/youzan/vant/pull/2238)
+- fix Tab incorrect initial line color when use color prop [\#2344](https://github.com/youzan/vant/pull/2344)
+- fix Tab log error when all tab disabled [\#2356](https://github.com/youzan/vant/pull/2356)
+- fix Tabbar update info position [\#2257](https://github.com/youzan/vant/pull/2257)
+- fix Toast missing clear method type definition [\#2354](https://github.com/youzan/vant/pull/2354)
+- fix compile failure in node 10 [\#2251](https://github.com/youzan/vant/pull/2251)
+- fix compile failure in windows [\#2229](https://github.com/youzan/vant/pull/2229)
+
+
 ## [v1.4.8](https://github.com/youzan/vant/tree/v1.4.8)
 `2018-12-05`
 

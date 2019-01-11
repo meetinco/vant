@@ -2,7 +2,7 @@
   <transition name="van-fade">
     <div
       v-if="value"
-      :class="b()"
+      :class="[b(), className]"
       @touchstart="onWrapperTouchStart"
       @touchend="onWrapperTouchEnd"
       @touchcancel="onWrapperTouchEnd"
@@ -51,6 +51,15 @@ import { range } from '../utils';
 const MAX_ZOOM = 3;
 const MIN_ZOOM = 1 / 3;
 
+function getDistance(touches) {
+  return Math.sqrt(
+    Math.abs(
+      (touches[0].clientX - touches[1].clientX) *
+        (touches[0].clientY - touches[1].clientY)
+    )
+  );
+}
+
 export default create({
   name: 'image-preview',
 
@@ -66,6 +75,7 @@ export default create({
     asyncClose: Boolean,
     startPosition: Number,
     showIndicators: Boolean,
+    className: [String, Object, Array],
     loop: {
       type: Boolean,
       default: true
@@ -156,15 +166,6 @@ export default create({
       }
     },
 
-    getDistance(touches) {
-      return Math.sqrt(
-        Math.abs(
-          (touches[0].clientX - touches[1].clientX) *
-            (touches[0].clientY - touches[1].clientY)
-        )
-      );
-    },
-
     startMove(event) {
       const image = event.currentTarget;
       const rect = image.getBoundingClientRect();
@@ -183,7 +184,7 @@ export default create({
       this.moving = false;
       this.zooming = true;
       this.startScale = this.scale;
-      this.startDistance = this.getDistance(event.touches);
+      this.startDistance = getDistance(event.touches);
     },
 
     onTouchStart(event) {
@@ -213,7 +214,7 @@ export default create({
       }
 
       if (this.zooming && touches.length === 2) {
-        const distance = this.getDistance(touches);
+        const distance = getDistance(touches);
         const scale = (this.startScale * distance) / this.startDistance;
         this.scale = range(scale, MIN_ZOOM, MAX_ZOOM);
       }

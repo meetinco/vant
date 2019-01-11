@@ -21,7 +21,36 @@ import { range } from '../utils';
 import PickerMixin from '../mixins/picker';
 
 const currentYear = new Date().getFullYear();
-const isValidDate = date => Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime());
+
+function isValidDate(date) {
+  return Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date.getTime());
+}
+
+function padZero(val) {
+  return `00${val}`.slice(-2);
+}
+
+function times(n, iteratee) {
+  let index = -1;
+  const result = Array(n);
+
+  while (++index < n) {
+    result[index] = iteratee(index);
+  }
+  return result;
+}
+
+function getTrueValue(formattedValue) {
+  if (!formattedValue) return;
+  while (isNaN(parseInt(formattedValue, 10))) {
+    formattedValue = formattedValue.slice(1);
+  }
+  return parseInt(formattedValue, 10);
+}
+
+function getMonthEndDay(year, month) {
+  return 32 - new Date(year, month - 1, 32).getDate();
+}
 
 export default create({
   name: 'datetime-picker',
@@ -82,7 +111,14 @@ export default create({
     value(val) {
       val = this.correctValue(val);
       const isEqual = this.type === 'time' ? val === this.innerValue : val.valueOf() === this.innerValue.valueOf();
-      if (!isEqual) this.innerValue = val;
+
+      if (!isEqual) {
+        this.innerValue = val;
+
+        if (this.type === 'time') {
+          this.updateColumnValue(val);
+        }
+      }
     },
 
     innerValue(val) {
@@ -141,9 +177,9 @@ export default create({
     },
 
     columns() {
-      const results = this.ranges.map(({ type, range }) => {
-        const values = this.times(range[1] - range[0] + 1, index => {
-          let value = range[0] + index;
+      const results = this.ranges.map(({ type, range: rangeArr }) => {
+        const values = times(rangeArr[1] - rangeArr[0] + 1, index => {
+          let value = rangeArr[0] + index;
           value = value < 10 ? `0${value}` : `${value}`;
           return this.formatter(type, value);
         });
@@ -164,11 +200,11 @@ export default create({
     }
   },
 
-  methods: {
-    pad(val) {
-      return `00${val}`.slice(-2);
-    },
+  mounted() {
+    this.updateColumnValue(this.innerValue);
+  },
 
+  methods: {
     correctValue(value) {
       // validate value
       const isDateType = this.type !== 'time';
@@ -182,8 +218,8 @@ export default create({
       // time type
       if (!isDateType) {
         let [hour, minute] = value.split(':');
-        hour = this.pad(range(hour, this.minHour, this.maxHour));
-        minute = this.pad(range(minute, this.minMinute, this.maxMinute));
+        hour = padZero(range(hour, this.minHour, this.maxHour));
+        minute = padZero(range(minute, this.minMinute, this.maxMinute));
 
         return `${hour}:${minute}`;
       }
@@ -193,16 +229,6 @@ export default create({
       value = Math.min(value, this.maxDate.getTime());
 
       return new Date(value);
-    },
-
-    times(n, iteratee) {
-      let index = -1;
-      const result = Array(n);
-
-      while (++index < n) {
-        result[index] = iteratee(index);
-      }
-      return result;
     },
 
     getBoundary(type, value) {
@@ -215,7 +241,7 @@ export default create({
 
       if (type === 'max') {
         month = 12;
-        date = this.getMonthEndDay(value.getFullYear(), value.getMonth() + 1);
+        date = getMonthEndDay(value.getFullYear(), value.getMonth() + 1);
         hour = 23;
         minute = 59;
       }
@@ -242,18 +268,6 @@ export default create({
       };
     },
 
-    getTrueValue(formattedValue) {
-      if (!formattedValue) return;
-      while (isNaN(parseInt(formattedValue, 10))) {
-        formattedValue = formattedValue.slice(1);
-      }
-      return parseInt(formattedValue, 10);
-    },
-
-    getMonthEndDay(year, month) {
-      return 32 - new Date(year, month - 1, 32).getDate();
-    },
-
     onConfirm() {
       this.$emit('confirm', this.innerValue);
     },
@@ -266,10 +280,10 @@ export default create({
         value = `${indexes[0] + this.minHour}:${indexes[1] + this.minMinute}`;
       } else {
         const values = picker.getValues();
-        const year = this.getTrueValue(values[0]);
-        const month = this.getTrueValue(values[1]);
-        const maxDate = this.getMonthEndDay(year, month);
-        let date = this.getTrueValue(values[2]);
+        const year = getTrueValue(values[0]);
+        const month = getTrueValue(values[1]);
+        const maxDate = getMonthEndDay(year, month);
+        let date = getTrueValue(values[2]);
         if (this.type === 'year-month') {
           date = 1;
         }
@@ -277,8 +291,8 @@ export default create({
         let hour = 0;
         let minute = 0;
         if (this.type === 'datetime') {
-          hour = this.getTrueValue(values[3]);
-          minute = this.getTrueValue(values[4]);
+          hour = getTrueValue(values[3]);
+          minute = getTrueValue(values[4]);
         }
 
         value = new Date(year, month - 1, date, hour, minute);
@@ -295,7 +309,7 @@ export default create({
 
     updateColumnValue(value) {
       let values = [];
-      const { formatter, pad } = this;
+      const { formatter } = this;
 
       if (this.type === 'time') {
         const pair = value.split(':');
@@ -306,13 +320,13 @@ export default create({
       } else {
         values = [
           formatter('year', `${value.getFullYear()}`),
-          formatter('month', pad(value.getMonth() + 1)),
-          formatter('day', pad(value.getDate()))
+          formatter('month', padZero(value.getMonth() + 1)),
+          formatter('day', padZero(value.getDate()))
         ];
         if (this.type === 'datetime') {
           values.push(
-            formatter('hour', pad(value.getHours())),
-            formatter('minute', pad(value.getMinutes()))
+            formatter('hour', padZero(value.getHours())),
+            formatter('minute', padZero(value.getMinutes()))
           );
         }
         if (this.type === 'year-month') {
@@ -324,10 +338,6 @@ export default create({
         this.$refs.picker.setValues(values);
       });
     }
-  },
-
-  mounted() {
-    this.updateColumnValue(this.innerValue);
   }
 });
 </script>

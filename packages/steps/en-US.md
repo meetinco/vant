@@ -30,22 +30,6 @@ export default {
 }
 ```
 
-#### Description
-
-```html
-<van-steps
-  :active="active"
-  icon="logistics"
-  title="Title"
-  description="Description"
->
-  <van-step>Step1</van-step>
-  <van-step>Step2</van-step>
-  <van-step>Step3</van-step>
-  <van-step>Step4</van-step>
-</van-steps>
-```
-
 #### Vertical Steps
 
 ```html
@@ -75,7 +59,7 @@ export default {
 | title | Title | `String` | - |
 | description | Description | `String` | - |
 | direction | Can be set to `horizontal` `vertical` | `String` | `horizontal` |
-| active-color | Active step color | `String` | `#4b0` |
+| active-color | Active step color | `String` | `#07c160` |
 
 ### Steps Slot
 

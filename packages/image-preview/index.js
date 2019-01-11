@@ -8,6 +8,7 @@ const defaultConfig = {
   images: [],
   loop: true,
   value: true,
+  className: '',
   showIndex: true,
   asyncClose: false,
   startPosition: 0,
@@ -33,10 +34,7 @@ const ImagePreview = (images, startPosition = 0) => {
 
   const options = Array.isArray(images) ? { images, startPosition } : images;
 
-  Object.assign(instance, {
-    ...defaultConfig,
-    ...options
-  });
+  Object.assign(instance, defaultConfig, options);
 
   instance.$once('input', show => {
     instance.value = show;

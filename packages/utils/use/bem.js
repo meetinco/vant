@@ -10,7 +10,7 @@
 const ELEMENT = '__';
 const MODS = '--';
 
-const join = (name, el, symbol) => el ? name + symbol + el : name;
+const join = (name, el, symbol) => (el ? name + symbol + el : name);
 
 const prefix = (name, mods) => {
   if (typeof mods === 'string') {
@@ -22,24 +22,19 @@ const prefix = (name, mods) => {
   }
 
   const ret = {};
-  mods && Object.keys(mods).forEach(key => {
-    ret[name + MODS + key] = mods[key];
-  });
+  mods &&
+    Object.keys(mods).forEach(key => {
+      ret[name + MODS + key] = mods[key];
+    });
   return ret;
 };
 
-export default {
-  methods: {
-    b(el, mods) {
-      const { name } = this.$options;
-
-      if (el && typeof el !== 'string') {
-        mods = el;
-        el = '';
-      }
-      el = join(name, el, ELEMENT);
-
-      return mods ? [el, prefix(el, mods)] : el;
-    }
+export default name => (el, mods) => {
+  if (el && typeof el !== 'string') {
+    mods = el;
+    el = '';
   }
+  el = join(name, el, ELEMENT);
+
+  return mods ? [el, prefix(el, mods)] : el;
 };

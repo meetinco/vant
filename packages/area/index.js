@@ -1,33 +1,11 @@
-<template>
-  <picker
-    ref="picker"
-    :class="b()"
-    show-toolbar
-    value-key="name"
-    :title="title"
-    :loading="loading"
-    :columns="displayColumns"
-    :item-height="itemHeight"
-    :visible-item-count="visibleItemCount"
-    @change="onChange"
-    @confirm="$emit('confirm', $event)"
-    @cancel="$emit('cancel', $event)"
-  />
-</template>
-
-<script>
-import create from '../utils/create';
+import { use } from '../utils';
 import Picker from '../picker';
 import PickerMixin from '../mixins/picker';
 
-export default create({
-  name: 'area',
+const [sfc, bem] = use('area');
 
+export default sfc({
   mixins: [PickerMixin],
-
-  components: {
-    Picker
-  },
 
   props: {
     value: String,
@@ -63,6 +41,13 @@ export default create({
 
     displayColumns() {
       return this.columns.slice(0, +this.columnsNum);
+    },
+
+    listeners() {
+      return {
+        ...this.$listeners,
+        change: this.onChange
+      };
     }
   },
 
@@ -93,9 +78,9 @@ export default create({
       }
 
       const list = this[type];
-      result = Object.keys(list).map(code => ({
-        code,
-        name: list[code]
+      result = Object.keys(list).map(listCode => ({
+        code: listCode,
+        name: list[listCode]
       }));
 
       if (code) {
@@ -150,7 +135,7 @@ export default create({
       picker.setColumnValues(1, city);
 
       if (city.length && code.slice(2, 4) === '00') {
-        code = city[0].code;
+        [{ code }] = city;
       }
 
       picker.setColumnValues(2, this.getList('county', code.slice(0, 4)));
@@ -198,6 +183,22 @@ export default create({
       this.code = '';
       this.setValues();
     }
+  },
+
+  render(h) {
+    return (
+      <Picker
+        ref="picker"
+        class={bem()}
+        show-toolbar
+        value-key="name"
+        title={this.title}
+        loading={this.loading}
+        columns={this.displayColumns}
+        item-height={this.itemHeight}
+        visible-item-count={this.visibleItemCount}
+        {...{ on: this.listeners }}
+      />
+    );
   }
 });
-</script>

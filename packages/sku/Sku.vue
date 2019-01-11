@@ -26,7 +26,11 @@
           :selected-sku-comb="selectedSkuComb"
         >
           <div class="van-sku__goods-price">
-            <span class="van-sku__price-symbol">￥</span><span class="van-sku__price-num">{{ price }}</span>
+            <span class="van-sku__price-symbol">￥</span>
+            <span
+              v-text="price"
+              class="van-sku__price-num"
+            />
           </div>
         </slot>
       </sku-header>
@@ -49,7 +53,7 @@
       >
         <div
           v-if="hasSku"
-          class="van-sku-group-container van-hairline--bottom"
+          :class="skuGroupClass"
         >
           <sku-row
             v-for="(skuTreeItem, index) in skuTree"
@@ -57,8 +61,8 @@
             :sku-row="skuTreeItem"
           >
             <sku-row-item
-              v-for="(skuValue, index) in skuTreeItem.v"
-              :key="index"
+              v-for="(skuValue, valueIndex) in skuTreeItem.v"
+              :key="valueIndex"
               :sku-key-str="skuTreeItem.k_s"
               :sku-value="skuValue"
               :sku-event-bus="skuEventBus"
@@ -178,6 +182,10 @@ export default create({
       type: Object,
       default: () => ({})
     },
+    showSoldoutSku: {
+      type: Boolean,
+      default: true
+    },
     showAddCartBtn: {
       type: Boolean,
       default: true
@@ -242,6 +250,16 @@ export default create({
   },
 
   computed: {
+    skuGroupClass() {
+      return [
+        'van-sku-group-container',
+        'van-hairline--bottom',
+        {
+          'van-sku-group-container--hide-soldout': !this.showSoldoutSku
+        }
+      ];
+    },
+
     bodyStyle() {
       if (this.$isServer) {
         return;
@@ -274,7 +292,8 @@ export default create({
           price: Math.round(this.sku.price * 100),
           stock_num: this.sku.stock_num
         };
-      } else if (this.isSkuCombSelected) {
+      }
+      if (this.isSkuCombSelected) {
         return getSkuComb(this.sku.list, this.selectedSku);
       }
       return null;
@@ -295,15 +314,16 @@ export default create({
     imageList() {
       const imageList = [this.goods.picture];
       if (this.skuTree.length > 0) {
-        const treeItem = this.skuTree.filter(treeItem => treeItem.k_s === 's1')[0] || {};
+        const treeItem = this.skuTree.filter(item => item.k_s === 's1')[0] || {};
 
         if (!treeItem.v) {
           return;
         }
 
         treeItem.v.forEach(vItem => {
-          if (vItem.imgUrl) {
-            imageList.push(vItem.imgUrl);
+          const img = vItem.imgUrl || vItem.img_url;
+          if (img) {
+            imageList.push(img);
           }
         });
       }
@@ -406,9 +426,7 @@ export default create({
     },
 
     onPreviewImage(indexImage) {
-      const index = this.imageList.findIndex(image => {
-        return image === indexImage;
-      });
+      const index = this.imageList.findIndex(image => image === indexImage);
 
       const cbParams = {
         index,

@@ -1,3 +1,4 @@
+/* eslint-disable */
 // This file is auto gererated by build/build-entry.js
 import Actionsheet from './actionsheet';
 import AddressEdit from './address-edit';
@@ -18,6 +19,7 @@ import CollapseItem from './collapse-item';
 import ContactCard from './contact-card';
 import ContactEdit from './contact-edit';
 import ContactList from './contact-list';
+import Coupon from './coupon';
 import CouponCell from './coupon-cell';
 import CouponList from './coupon-list';
 import DatetimePicker from './datetime-picker';
@@ -71,7 +73,7 @@ import TreeSelect from './tree-select';
 import Uploader from './uploader';
 import Waterfall from './waterfall';
 
-const version = '1.4.8';
+const version = '1.5.2';
 const components = [
   Actionsheet,
   AddressEdit,
@@ -92,6 +94,7 @@ const components = [
   ContactCard,
   ContactEdit,
   ContactList,
+  Coupon,
   CouponCell,
   CouponList,
   DatetimePicker,
@@ -177,6 +180,7 @@ export {
   ContactCard,
   ContactEdit,
   ContactList,
+  Coupon,
   CouponCell,
   CouponList,
   DatetimePicker,

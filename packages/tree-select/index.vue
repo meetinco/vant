@@ -6,12 +6,11 @@
     <div :class="b('nav')">
       <div
         v-for="(item, index) in items"
+        v-text="item.text"
         class="van-ellipsis"
-        :class="b('nitem', { active: mainActiveIndex === index })"
-        @click="$emit('navclick', index)"
-      >
-        {{ item.text }}
-      </div>
+        :class="b('nitem', { active: mainActiveIndex === index, disabled: item.disabled })"
+        @click="onClickNav(item, index)"
+      />
     </div>
     <div :class="b('content')">
       <div
@@ -27,7 +26,8 @@
         {{ item.text }}
         <icon
           v-if="activeId === item.id"
-          name="success"
+          name="checked"
+          size="16px"
           :class="b('selected')"
         />
       </div>
@@ -62,6 +62,12 @@ export default create({
   },
 
   methods: {
+    onClickNav(data, index) {
+      if (!data.disabled) {
+        this.$emit('navclick', index);
+      }
+    },
+
     onItemSelect(data) {
       if (!data.disabled) {
         this.$emit('itemclick', data);

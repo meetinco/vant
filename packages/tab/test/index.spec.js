@@ -38,7 +38,7 @@ function createWrapper(options) {
   });
 }
 
-test('click to switch tab', async() => {
+test('click to switch tab', async () => {
   const onChange = jest.fn();
   const wrapper = createWrapper({
     methods: {
@@ -57,7 +57,7 @@ test('click to switch tab', async() => {
   expect(onChange.mock.calls.length).toEqual(1);
 });
 
-test('swipe to switch tab', async() => {
+test('swipe to switch tab', async () => {
   const onChange = jest.fn();
   const wrapper = createWrapper({
     methods: {
@@ -81,7 +81,7 @@ test('swipe to switch tab', async() => {
   wrapper.destroy();
 });
 
-test('change tabs data', async() => {
+test('change tabs data', async () => {
   const wrapper = createWrapper();
 
   expect(wrapper).toMatchSnapshot();
@@ -93,5 +93,7 @@ test('change tabs data', async() => {
     color: 'blue',
     title1: 'new title1'
   });
+
+  await later();
   expect(wrapper).toMatchSnapshot();
 });

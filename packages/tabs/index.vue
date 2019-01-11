@@ -24,31 +24,32 @@
           class="van-tab"
           :class="{
             'van-tab--active': index === curActive,
-            'van-tab--disabled': tab.disabled
+            'van-tab--disabled': tab.disabled,
+            'van-tab--complete': !ellipsis
           }"
           :style="getTabStyle(tab, index)"
           @click="onClick(index)"
         >
           <span
+            v-text="tab.title"
             ref="title"
-            class="van-ellipsis"
-          >
-            {{ tab.title }}
-          </span>
+            :class="{ 'van-ellipsis': ellipsis }"
+          />
         </div>
       </div>
     </div>
     <div
       ref="content"
-      :class="b('content')"
+      :class="b('content', { animated })"
     >
       <div
-        v-show="computedWidth !== 0"
+        v-if="animated"
         :class="b('track')"
         :style="trackStyle"
       >
         <slot />
       </div>
+      <slot v-else />
     </div>
   </div>
 </template>
@@ -75,7 +76,15 @@ export default create({
     animated: Boolean,
     offsetTop: Number,
     swipeable: Boolean,
+    ellipsis: {
+      type: Boolean,
+      default: true
+    },
     lineWidth: {
+      type: Number,
+      default: null
+    },
+    lineHeight: {
       type: Number,
       default: null
     },
@@ -102,20 +111,21 @@ export default create({
       tabs: [],
       position: '',
       curActive: null,
-      lineStyle: {},
+      lineStyle: {
+        backgroundColor: this.color
+      },
       events: {
         resize: false,
         sticky: false,
         swipeable: false
-      },
-      computedWidth: 0
+      }
     };
   },
 
   computed: {
     // whether the nav is scrollable
     scrollable() {
-      return this.tabs.length > this.swipeThreshold;
+      return this.tabs.length > this.swipeThreshold || !this.ellipsis;
     },
 
     wrapStyle() {
@@ -142,20 +152,12 @@ export default create({
     },
 
     trackStyle() {
-      const {
-        curActive,
-        computedWidth = 0,
-        tabs,
-        animated
-      } = this;
-      if (!animated) return {};
-
-      const offset = -1 * computedWidth * curActive;
-      return {
-        width: `${computedWidth * tabs.length}px`,
-        transitionDuration: `${this.duration}s`,
-        transform: `translateX(${offset}px)`
-      };
+      if (this.animated) {
+        return {
+          left: `${-1 * this.curActive * 100}%`,
+          transitionDuration: `${this.duration}s`
+        };
+      }
     }
   },
 
@@ -170,7 +172,7 @@ export default create({
       this.setLine();
     },
 
-    tabs(tabs) {
+    tabs() {
       this.correctActive(this.curActive || this.active);
       this.scrollIntoView();
       this.setLine();
@@ -196,13 +198,9 @@ export default create({
   },
 
   mounted() {
-    this.correctActive(this.active);
-    this.setLine();
-    this.setWidth();
-
     this.$nextTick(() => {
+      this.inited = true;
       this.handlers(true);
-      this.scrollIntoView(true);
     });
   },
 
@@ -222,13 +220,6 @@ export default create({
   },
 
   methods: {
-    setWidth() {
-      if (this.$el) {
-        const rect = this.$el.getBoundingClientRect() || {};
-        this.computedWidth = rect.width;
-      }
-    },
-
     // whether to bind sticky listener
     handlers(bind) {
       const { events } = this;
@@ -299,23 +290,37 @@ export default create({
 
     // update nav bar style
     setLine() {
+      const shouldAnimate = this.inited;
+
       this.$nextTick(() => {
         const { tabs } = this.$refs;
 
-        if (!tabs || this.type !== 'line') {
+        if (!tabs || !tabs[this.curActive] || this.type !== 'line') {
           return;
         }
 
         const tab = tabs[this.curActive];
-        const width = this.isDef(this.lineWidth) ? this.lineWidth : (tab.offsetWidth / 2);
+        const { lineWidth, lineHeight } = this;
+        const width = this.isDef(lineWidth) ? lineWidth : (tab.offsetWidth / 2);
         const left = tab.offsetLeft + (tab.offsetWidth - width) / 2;
 
-        this.lineStyle = {
+        const lineStyle = {
           width: `${width}px`,
           backgroundColor: this.color,
-          transform: `translateX(${left}px)`,
-          transitionDuration: `${this.duration}s`
+          transform: `translateX(${left}px)`
         };
+
+        if (shouldAnimate) {
+          lineStyle.transitionDuration = `${this.duration}s`;
+        }
+
+        if (this.isDef(lineHeight)) {
+          const height = `${lineHeight}px`;
+          lineStyle.height = height;
+          lineStyle.borderRadius = height;
+        }
+
+        this.lineStyle = lineStyle;
       });
     },
 
@@ -366,14 +371,13 @@ export default create({
     scrollIntoView(immediate) {
       const { tabs } = this.$refs;
 
-      if (!this.scrollable || !tabs) {
+      if (!this.scrollable || !tabs || !tabs[this.curActive]) {
         return;
       }
 
-      const tab = tabs[this.curActive];
       const { nav } = this.$refs;
       const { scrollLeft, offsetWidth: navWidth } = nav;
-      const { offsetLeft, offsetWidth: tabWidth } = tab;
+      const { offsetLeft, offsetWidth: tabWidth } = tabs[this.curActive];
 
       this.scrollTo(nav, scrollLeft, offsetLeft - (navWidth - tabWidth) / 2, immediate);
     },
@@ -423,7 +427,7 @@ export default create({
         }
       }
 
-      if (this.scrollable) {
+      if (this.scrollable && this.ellipsis) {
         style.flexBasis = 88 / (this.swipeThreshold) + '%';
       }
 
