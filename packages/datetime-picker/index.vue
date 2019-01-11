@@ -152,8 +152,15 @@ export default create({
           values
         };
       });
-
-      return results;
+      // 去掉null和undefined的值
+      return results.map(item => {
+        if (item && Array.isArray(item.values)) {
+          return {
+            values: item.values.filter(val => val !== null && val !== undefined)
+          };
+        }
+        return item;
+      });
     }
   },
 

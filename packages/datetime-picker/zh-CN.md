@@ -89,6 +89,7 @@ export default {
 ```
 
 #### 选择时间
+通过传入 `formatter` 函数对选项进行过滤，比如只显示5的倍数
 
 ```html
 <van-datetime-picker
@@ -105,6 +106,20 @@ export default {
     return {
       currentDate: '12:00'
     };
+  },
+  methdos: {
+    formatter(type, value) {
+      if (type === 'year') {
+        return value + this.$t('year');
+      } else if (type === 'month') {
+        return value + this.$t('month');
+      } else if (type === 'minute') {
+        if (value % 5 !== 0) {
+          return undefined;
+        }
+      }
+      return value;
+    }
   }
 }
 ```
